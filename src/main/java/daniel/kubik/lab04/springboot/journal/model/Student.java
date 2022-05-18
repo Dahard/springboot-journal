@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Entity
 public class Student {
 
-    @Id
-    private Long id;
+    @Id()
+    private int pesel;
     private String name;
     private String lastName;
 
@@ -18,7 +18,7 @@ public class Student {
     private int birthYear;
     private double pointsCount;
     @ManyToOne
-    @JoinColumn(name = "group_id")
+    @JoinColumn
     private Course course;
 
 }

@@ -5,9 +5,9 @@ import daniel.kubik.lab04.springboot.journal.model.StudentCondition;
 import lombok.Data;
 
 @Data
-public class Student {
+public class StudentData {
 
-    private Long id;
+    private int pesel;
     private String name;
     private String lastName;
     private StudentCondition state;
