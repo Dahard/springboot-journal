@@ -12,11 +12,12 @@ public class Student {
     private int pesel;
     private String name;
     private String lastName;
+    private int birthYear;
+    private double pointsCount;
 
     @Enumerated(EnumType.STRING)
     private StudentCondition state;
-    private int birthYear;
-    private double pointsCount;
+
     @ManyToOne
     @JoinColumn
     private Course course;

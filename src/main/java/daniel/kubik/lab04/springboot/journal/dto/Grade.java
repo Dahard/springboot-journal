@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Grade {
-    private Long studentId;
+    private Long studentPesel;
     private double grade;
 }

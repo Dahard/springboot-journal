@@ -13,8 +13,10 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
     @OneToMany(mappedBy = "course")
     private List<Student> students;
     private int maxStudentCount;
+    private int rate;
 
 }

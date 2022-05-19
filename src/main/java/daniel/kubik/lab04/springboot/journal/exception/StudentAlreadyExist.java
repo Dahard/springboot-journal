@@ -5,5 +5,4 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value= HttpStatus.CONFLICT, reason="Already created")
 public class StudentAlreadyExist extends RuntimeException{
-
 }

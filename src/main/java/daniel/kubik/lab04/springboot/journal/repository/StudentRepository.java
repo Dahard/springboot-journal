@@ -9,7 +9,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     Optional<Student> findByPesel(int pesel);
 
-    void deleteByPesel(int pesel);
-
+    void deleteStudentByPesel(int pesel);
 
 }

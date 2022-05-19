@@ -1,6 +1,7 @@
 package daniel.kubik.lab04.springboot.journal.api;
 
 import daniel.kubik.lab04.springboot.journal.dto.*;
+import daniel.kubik.lab04.springboot.journal.model.Rating;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public interface JournalApi {
     ResponseEntity<CoursesResponse> getAllCourses();
 
     @PostMapping("/course")
-    ResponseEntity<Course> createCourse();
+    ResponseEntity<CourseData> createCourse(@RequestBody CourseData courseData);
 
     @DeleteMapping("/course/{id}")
     ResponseEntity<Void> deleteCourse(@PathVariable("id") Long id);
@@ -38,6 +39,9 @@ public interface JournalApi {
     ResponseEntity<Integer> getFillPercentage(@PathVariable("id") Long courseId);
 
     @PostMapping("/rating")
-    ResponseEntity<String> rateCourse();
+    ResponseEntity<Rating> rateCourse(@RequestBody RatingData ratingData);
+
+    @GetMapping("/rating")
+    ResponseEntity<RatingResponse> getRating();
 
 }
