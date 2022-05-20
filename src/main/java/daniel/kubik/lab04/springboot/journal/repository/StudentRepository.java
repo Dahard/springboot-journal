@@ -11,4 +11,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     void deleteStudentByPesel(int pesel);
 
+    Student findAllByBirthYear(int birthOfYear);
+
 }

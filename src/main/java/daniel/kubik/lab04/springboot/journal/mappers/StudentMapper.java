@@ -10,4 +10,5 @@ import java.util.List;
 public interface StudentMapper {
     StudentData map(Student student);
     List<StudentData> map(List<Student> students);
+    Student map(StudentData studentData);
 }

@@ -1,5 +1,6 @@
 package daniel.kubik.lab04.springboot.journal.model;
 
+import daniel.kubik.lab04.springboot.journal.dto.GradeData;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,10 +14,12 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
-    @OneToMany(mappedBy = "course")
-    private List<Student> students;
     private int maxStudentCount;
     private int rate;
 
+    @OneToMany(mappedBy = "course")
+    private List<Student> students;
+
+    @OneToMany(mappedBy = "grade")
+    private List<Grade> gradeData;
 }

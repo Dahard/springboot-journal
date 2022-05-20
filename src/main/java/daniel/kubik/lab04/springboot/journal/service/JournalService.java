@@ -1,12 +1,17 @@
 package daniel.kubik.lab04.springboot.journal.service;
 import daniel.kubik.lab04.springboot.journal.dto.*;
 
+import daniel.kubik.lab04.springboot.journal.exception.GradesNotFound;
 import daniel.kubik.lab04.springboot.journal.exception.StudentNotFound;
 
+import daniel.kubik.lab04.springboot.journal.mappers.GradeMapper;
+import daniel.kubik.lab04.springboot.journal.mappers.StudentMapper;
 import daniel.kubik.lab04.springboot.journal.model.Course;
+import daniel.kubik.lab04.springboot.journal.model.Grade;
 import daniel.kubik.lab04.springboot.journal.model.Rating;
 import daniel.kubik.lab04.springboot.journal.model.Student;
 import daniel.kubik.lab04.springboot.journal.repository.CourseRepository;
+import daniel.kubik.lab04.springboot.journal.repository.GradeRepository;
 import daniel.kubik.lab04.springboot.journal.repository.RatingRepository;
 import daniel.kubik.lab04.springboot.journal.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +30,9 @@ public class JournalService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final RatingRepository ratingRepository;
+    private final GradeRepository gradeRepository;
+    private final GradeMapper gradeMapper;
+    private final StudentMapper studentMapper;
 
     void throwStudentException(Student student) {
         log.error("{} student already exist", student.getPesel());
@@ -60,6 +68,14 @@ public class JournalService {
         return ratingRepository.save(rating);
     }
 
+    private Grade createAndSaveGrade(GradeData gradeData) {
+        Grade grade = new Grade();
+        grade.setStudentPesel(gradeData.getStudentPesel());
+        grade.setGrade(gradeData.getGrade());
+        grade.setExerciseTitle(gradeData.getExerciseTitle());
+        return gradeRepository.save(grade);
+    }
+
     public Student createStudent(StudentData studentData) {
 
         Optional<Student> byPesel = studentRepository.findByPesel(studentData.getPesel());
@@ -78,14 +94,6 @@ public class JournalService {
         studentRepository.deleteStudentByPesel(pesel);
     }
 
-    public Grade getStudentGrade(int pesel) {
-        return null;
-    }
-
-    public ResponseEntity<Byte>[] getAllStudentsCsv() {
-        return new ResponseEntity[]{(ResponseEntity<Byte>) ResponseEntity.ok()};
-    }
-
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
@@ -96,6 +104,12 @@ public class JournalService {
             throwCourseException(byId.get());
         }
         return createAndSaveCourse(courseData);
+    }
+
+    public Student addStudentToCourse(Long id, int studentPesel) {
+        Student student = studentRepository.findByPesel(studentPesel).get();
+        courseRepository.findById(id).get().getStudents().add(student);
+        return student;
     }
 
     @Transactional
@@ -127,4 +141,27 @@ public class JournalService {
     public List<Rating> getRating() {
         return ratingRepository.findAll();
     }
+
+    public List<Grade> getStudentGrade(int pesel) {
+        List<Grade> allByStudentPesel = gradeRepository.findAllByStudentPesel(pesel);
+        if (allByStudentPesel.isEmpty()) {
+            throw new GradesNotFound();
+        } else {
+            return allByStudentPesel;
+        }
+    }
+
+    public Grade grade(Long courseId, GradeData gradeData) {
+        createAndSaveGrade(gradeData);
+        Grade grade = gradeMapper.map(gradeData);
+        courseRepository.findById(courseId).get()
+                .getGradeData()
+                .add(grade);
+        return grade;
+    }
+
+    public ResponseEntity<Byte>[] getAllStudentsCsv() {
+        return new ResponseEntity[]{(ResponseEntity<Byte>) ResponseEntity.ok()};
+    }
+
 }

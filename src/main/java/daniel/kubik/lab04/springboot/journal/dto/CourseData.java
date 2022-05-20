@@ -12,4 +12,5 @@ public class CourseData {
     private String name;
     private int rate;
     private List<Student> students;
+    List<GradeData> gradeData;
 }

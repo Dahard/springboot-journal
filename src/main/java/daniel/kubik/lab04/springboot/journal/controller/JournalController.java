@@ -3,6 +3,7 @@ package daniel.kubik.lab04.springboot.journal.controller;
 import daniel.kubik.lab04.springboot.journal.api.JournalApi;
 import daniel.kubik.lab04.springboot.journal.dto.*;
 import daniel.kubik.lab04.springboot.journal.mappers.CourseMapper;
+import daniel.kubik.lab04.springboot.journal.mappers.GradeMapper;
 import daniel.kubik.lab04.springboot.journal.mappers.RatingMapper;
 import daniel.kubik.lab04.springboot.journal.mappers.StudentMapper;
 import daniel.kubik.lab04.springboot.journal.model.Rating;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -21,6 +24,7 @@ public class JournalController implements JournalApi {
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
     private final RatingMapper ratingMapper;
+    private final GradeMapper gradeMapper;
 
     @Override
     public ResponseEntity<StudentData> createStudent(StudentData studentData) {
@@ -36,12 +40,6 @@ public class JournalController implements JournalApi {
     public ResponseEntity<Void> deleteStudent(int id) {
         journalService.deleteStudent(id);
         return ResponseEntity.ok(null);
-    }
-
-    //TODO getStudentGrade()
-    @Override
-    public ResponseEntity<Grade> getStudentGrade(int id) {
-        return null;
     }
 
     //TODO CSV
@@ -60,6 +58,21 @@ public class JournalController implements JournalApi {
     @Override
     public ResponseEntity<CourseData> createCourse(CourseData courseData) {
         return ResponseEntity.ok(courseMapper.map(journalService.createCourse(courseData)));
+    }
+
+    @Override
+    public ResponseEntity<StudentData> addStudent(Long courseId, Integer studentPesel) {
+        return ResponseEntity.ok(studentMapper.map(journalService.addStudentToCourse(courseId, studentPesel)));
+    }
+
+    @Override
+    public ResponseEntity<GradeData> grade(Long courseId, GradeData gradeData) {
+        return ResponseEntity.ok(gradeMapper.map(journalService.grade(courseId, gradeData)));
+    }
+
+    @Override
+    public ResponseEntity<List<GradeData>> getStudentGrade(int id) {
+        return ResponseEntity.ok(gradeMapper.map(journalService.getStudentGrade(id)));
     }
 
     @Override

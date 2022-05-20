@@ -5,6 +5,8 @@ import daniel.kubik.lab04.springboot.journal.model.Rating;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/api")
 public interface JournalApi {
 
@@ -18,7 +20,7 @@ public interface JournalApi {
     ResponseEntity<Void> deleteStudent(@PathVariable("id") int id);
 
     @GetMapping("/student/{id}/grade")
-    ResponseEntity<Grade> getStudentGrade(@PathVariable("id") int id);
+    ResponseEntity<List<GradeData>> getStudentGrade(@PathVariable("id") int id);
 
     @GetMapping("/student/csv")
     ResponseEntity<Byte> [] getAllStudentsCsv();
@@ -28,6 +30,12 @@ public interface JournalApi {
 
     @PostMapping("/course")
     ResponseEntity<CourseData> createCourse(@RequestBody CourseData courseData);
+
+    @PostMapping("/course/{id}/addStudent")
+    ResponseEntity<StudentData> addStudent(@PathVariable("id") Long courseId, @RequestBody Integer studentPesel);
+
+    @PostMapping("/course/{id}/grade")
+    ResponseEntity<GradeData> grade(@PathVariable("id") Long courseId, @RequestBody GradeData gradeData);
 
     @DeleteMapping("/course/{id}")
     ResponseEntity<Void> deleteCourse(@PathVariable("id") Long id);
