@@ -98,7 +98,7 @@ public class JournalController implements JournalApi {
     }
 
     @Override
-    public ResponseEntity<Integer> getFillPercentage(Long courseId) {
+    public ResponseEntity<Fill> getFillPercentage(Long courseId) {
         return ResponseEntity.ok(journalService.getFillPercentage(courseId));
     }
 

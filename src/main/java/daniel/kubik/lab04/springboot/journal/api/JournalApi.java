@@ -44,7 +44,7 @@ public interface JournalApi {
     ResponseEntity<StudentsResponse> getAllStudentsFromCourse(@PathVariable("id") Long courseId);
 
     @GetMapping("/course/{id}/fill")
-    ResponseEntity<Integer> getFillPercentage(@PathVariable("id") Long courseId);
+    ResponseEntity<Fill> getFillPercentage(@PathVariable("id") Long courseId);
 
     @PostMapping("/rating")
     ResponseEntity<Rating> rateCourse(@RequestBody RatingData ratingData);

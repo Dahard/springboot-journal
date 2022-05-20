@@ -119,10 +119,10 @@ public class JournalService {
         }
     }
 
-    public int getFillPercentage(Long courseId) {
+    public Fill getFillPercentage(Long courseId) {
         int maxStudentCount = courseRepository.findById(courseId).get().getMaxStudentCount();
         int size = courseRepository.findById(courseId).get().getStudents().size();
-        return size * 100 / maxStudentCount;
+        return new Fill(size * 100 / maxStudentCount);
     }
 
     public Rating rateCourse(RatingData ratingData) {
