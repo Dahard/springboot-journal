@@ -11,6 +11,14 @@ public class CourseData {
     private int maxStudentCount;
     private String name;
     private int rate;
-    private List<Student> students;
+    private List<StudentListEntry> students;
     List<GradeData> gradeData;
+
+    @Data
+    public static class StudentListEntry {
+        private String name;
+        private String lastName;
+        private int pesel;
+    }
+
 }

@@ -10,16 +10,20 @@ import daniel.kubik.lab04.springboot.journal.model.Rating;
 import daniel.kubik.lab04.springboot.journal.service.JournalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class JournalController implements JournalApi {
 
+    public static final MediaType CSV_CONTENT_TYPE = new MediaType("text","csv");
     private final JournalService journalService;
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
@@ -44,8 +48,13 @@ public class JournalController implements JournalApi {
 
     //TODO CSV
     @Override
-    public ResponseEntity<Byte>[] getAllStudentsCsv() {
-        return null;
+    public ResponseEntity<byte[]> getAllStudentsCsv() {
+        byte[] bytes = journalService.getAllStudentsCsv().getBytes(StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=students_" + System.currentTimeMillis() + ".csv")
+                .contentType(CSV_CONTENT_TYPE)
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 
     @Override
@@ -61,8 +70,8 @@ public class JournalController implements JournalApi {
     }
 
     @Override
-    public ResponseEntity<StudentData> addStudent(Long courseId, Integer studentPesel) {
-        return ResponseEntity.ok(studentMapper.map(journalService.addStudentToCourse(courseId, studentPesel)));
+    public ResponseEntity<CourseData> addStudent(Long courseId, StudentPesel studentPesel) {
+        return ResponseEntity.ok(courseMapper.map(journalService.addStudentToCourse(courseId, studentPesel.getPesel())));
     }
 
     @Override

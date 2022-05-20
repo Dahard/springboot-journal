@@ -23,7 +23,7 @@ public interface JournalApi {
     ResponseEntity<List<GradeData>> getStudentGrade(@PathVariable("id") int id);
 
     @GetMapping("/student/csv")
-    ResponseEntity<Byte> [] getAllStudentsCsv();
+    ResponseEntity<byte[]> getAllStudentsCsv();
 
     @GetMapping("/course")
     ResponseEntity<CoursesResponse> getAllCourses();
@@ -32,7 +32,7 @@ public interface JournalApi {
     ResponseEntity<CourseData> createCourse(@RequestBody CourseData courseData);
 
     @PostMapping("/course/{id}/addStudent")
-    ResponseEntity<StudentData> addStudent(@PathVariable("id") Long courseId, @RequestBody Integer studentPesel);
+    ResponseEntity<CourseData> addStudent(@PathVariable("id") Long courseId, @RequestBody StudentPesel studentPesel);
 
     @PostMapping("/course/{id}/grade")
     ResponseEntity<GradeData> grade(@PathVariable("id") Long courseId, @RequestBody GradeData gradeData);

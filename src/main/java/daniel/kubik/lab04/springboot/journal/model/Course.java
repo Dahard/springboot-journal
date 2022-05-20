@@ -1,10 +1,10 @@
 package daniel.kubik.lab04.springboot.journal.model;
 
-import daniel.kubik.lab04.springboot.journal.dto.GradeData;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Data
 @Entity
@@ -22,4 +22,12 @@ public class Course {
 
     @OneToMany(mappedBy = "grade")
     private List<Grade> gradeData;
+
+    public void addStudent(Student student) {
+        if (students == null) {
+            students = new LinkedList<>();
+        }
+        students.add(student);
+        student.setCourse(this);
+    }
 }

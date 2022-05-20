@@ -4,6 +4,7 @@ import daniel.kubik.lab04.springboot.journal.model.Course;
 import daniel.kubik.lab04.springboot.journal.model.StudentCondition;
 import lombok.Data;
 
+
 @Data
 public class StudentData {
 
@@ -13,5 +14,5 @@ public class StudentData {
     private StudentCondition state;
     private int birthYear;
     private double pointsCount;
-    private Course course;
+    private String courseName;
 }

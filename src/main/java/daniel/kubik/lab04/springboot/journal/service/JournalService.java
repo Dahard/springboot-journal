@@ -1,11 +1,11 @@
 package daniel.kubik.lab04.springboot.journal.service;
+
 import daniel.kubik.lab04.springboot.journal.dto.*;
-
 import daniel.kubik.lab04.springboot.journal.exception.GradesNotFound;
-import daniel.kubik.lab04.springboot.journal.exception.StudentNotFound;
-
-import daniel.kubik.lab04.springboot.journal.mappers.GradeMapper;
+import daniel.kubik.lab04.springboot.journal.exception.NotFound;
+import daniel.kubik.lab04.springboot.journal.exception.AlreadyExist;
 import daniel.kubik.lab04.springboot.journal.mappers.StudentMapper;
+import daniel.kubik.lab04.springboot.journal.mappers.GradeMapper;
 import daniel.kubik.lab04.springboot.journal.model.Course;
 import daniel.kubik.lab04.springboot.journal.model.Grade;
 import daniel.kubik.lab04.springboot.journal.model.Rating;
@@ -16,12 +16,10 @@ import daniel.kubik.lab04.springboot.journal.repository.RatingRepository;
 import daniel.kubik.lab04.springboot.journal.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,30 +31,30 @@ public class JournalService {
     private final GradeRepository gradeRepository;
     private final GradeMapper gradeMapper;
     private final StudentMapper studentMapper;
+    private final CsvProducer csvProducer;
 
-    void throwStudentException(Student student) {
-        log.error("{} student already exist", student.getPesel());
+    void checkStudentIsNotRegistered(int pesel) {
+        if (studentRepository.existsByPesel(pesel)) {
+            log.error("Student is already registered for pesel:{}", pesel);
+            throw new AlreadyExist("Student already Exist");
+        }
+    }
+
+    void checkCourseIsNameAvailable(String name){
+        if (courseRepository.existsByName(name)) {
+            log.error("Course name already in use");
+            throw new AlreadyExist("Course already exist");
+        }
     }
 
     void throwCourseException(Course course) {
         log.error("{} course already exist", course.getName());
     }
 
-    private Student createAndSaveStudent(StudentData studentData) {
-        Student student = new Student();
-        student.setPesel(studentData.getPesel());
-        student.setName(studentData.getName());
-        student.setLastName(studentData.getLastName());
-        student.setState(studentData.getState());
-        student.setBirthYear(studentData.getBirthYear());
-        return studentRepository.save(student);
-    }
-
     private Course createAndSaveCourse(CourseData courseData) {
         Course course = new Course();
         course.setName(courseData.getName());
         course.setMaxStudentCount(courseData.getMaxStudentCount());
-        course.setStudents(courseData.getStudents());
         return courseRepository.save(course);
     }
 
@@ -77,16 +75,13 @@ public class JournalService {
     }
 
     public Student createStudent(StudentData studentData) {
-
-        Optional<Student> byPesel = studentRepository.findByPesel(studentData.getPesel());
-        if (byPesel.isPresent()) {
-            throwStudentException(byPesel.get());
-        }
-        return createAndSaveStudent(studentData);
+        checkStudentIsNotRegistered(studentData.getPesel());
+        Student student = studentMapper.mapWithoutCourse(studentData);
+        return studentRepository.save(student);
     }
 
     public Student getStudent(int pesel) {
-       return studentRepository.findByPesel(pesel).orElseThrow(StudentNotFound::new);
+        return studentRepository.findByPesel(pesel).orElseThrow(() -> new NotFound("Student not found for pesel " + pesel));
     }
 
     @Transactional
@@ -99,17 +94,15 @@ public class JournalService {
     }
 
     public Course createCourse(CourseData courseData) {
-        Optional<Course> byId = courseRepository.findById(courseData.getId());
-        if (byId.isPresent()) {
-            throwCourseException(byId.get());
-        }
+        checkCourseIsNameAvailable(courseData.getName());
         return createAndSaveCourse(courseData);
     }
 
-    public Student addStudentToCourse(Long id, int studentPesel) {
-        Student student = studentRepository.findByPesel(studentPesel).get();
-        courseRepository.findById(id).get().getStudents().add(student);
-        return student;
+    public Course addStudentToCourse(Long id, int studentPesel) {
+        Student student = studentRepository.getById(studentPesel);
+        Course byId = courseRepository.getById(id);
+        byId.addStudent(student);
+        return courseRepository.save(byId);
     }
 
     @Transactional
@@ -120,7 +113,7 @@ public class JournalService {
     public List<Student> getAllStudentsFromCourse(Long courseId) {
         List<Student> students = courseRepository.findById(courseId).get().getStudents();
         if (students.isEmpty()) {
-            throw new StudentNotFound();
+            throw new NotFound("no one enjoys these course");
         } else {
             return students;
         }
@@ -160,8 +153,8 @@ public class JournalService {
         return grade;
     }
 
-    public ResponseEntity<Byte>[] getAllStudentsCsv() {
-        return new ResponseEntity[]{(ResponseEntity<Byte>) ResponseEntity.ok()};
+    public String getAllStudentsCsv() {
+        return csvProducer.produceCsvForStudents(studentRepository.findAll());
     }
 
 }

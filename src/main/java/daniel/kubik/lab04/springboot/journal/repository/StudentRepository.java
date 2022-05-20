@@ -13,4 +13,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     Student findAllByBirthYear(int birthOfYear);
 
+    boolean existsByPesel(int pesel);
+
 }

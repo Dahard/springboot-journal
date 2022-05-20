@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 public class Student {
 
-    @Id()
+    @Id
     private int pesel;
     private String name;
     private String lastName;

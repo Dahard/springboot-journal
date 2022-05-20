@@ -2,8 +2,8 @@ package daniel.kubik.lab04.springboot.journal.model;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Data
 @Entity
